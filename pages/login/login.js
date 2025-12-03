@@ -1,31 +1,25 @@
 const button = document.querySelector("button")
 button.onclick = (event) => {
     event.preventDefault()
-    signUpKraken()
+    signIn()
 }
 
-async function signUpKraken() {
-    const name = document.querySelector("#name").value
+async function signIn() {
     const email = document.querySelector("#email").value
-    const age = document.querySelector("#age").value
-    const nickname = document.querySelector("#nickname").value
     const password = document.querySelector("#password").value
 
-    if(name === "" || email === "" || age === "" || nickname === "" || password === "") {
+    if(email === "" ||  password === "") {
         alert("PREENCHA TODAS AS INFORMAÇÕES, animal!")
         return
     }
 
 
     const user = {
-        name,
         email,
-        age,
-        nickname,
         password
     }
 
-    const response = await fetch("http://localhost:3333/cadastrar", {
+    const response = await fetch("http://localhost:3333/Login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -33,9 +27,14 @@ async function signUpKraken() {
         body: JSON.stringify({ user })
     }).then(response => response.json())
 
-    const { message } = response
+    if (response.message) {
+        alert(response.message)
+        return
+    }
 
-    alert(message)
+    const { id, name } = response
 
-    window.location.href = "../index.html"
+    sessionStorage.setItem("user", JSON.stringify({ id, name }))
+    alert("Login realizado com sucesso!")
+    window.location.href = "../../index.html"
 }
